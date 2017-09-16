@@ -1,0 +1,136 @@
+---
+title: "warmup02"
+author: "Xiaoya Li"
+date: "September 15, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+load("~/UC_Berkeley/Stat133/HW2/nba2017-salary-points.RData")
+ls()
+```
+
+##Exploratory Data Analysis
+
+<br>
+
+###Quantitative Variable
+
+
+- Use the summary() function to get a quick summary of descriptive statitstics for each numeric vector
+```{r}
+summary(points)
+```
+
+```{r}
+summary(points1)
+```
+
+```{r}
+summary(points2)
+```
+
+```{r}
+summary(points3)
+```
+
+```{r}
+summary(salary)
+```
+
+- Now, look up for functions that allow you to get the following statistics:
+
+    * mean (i.e. average)
+    * standard deviation
+    * minimum value
+    * maximum value
+    * median
+    * quartiles
+    
+```{r}
+mean(points)
+sd(points)
+min(points)
+max(points)
+median(points)
+quantile(points)
+```
+    
+- What are the typical values in each vector?  
+  In general, players get a average `points` of 547, with a standard deviation of 489. The minimum points is 0 while the maximum is 2558. The median of all the points is 432. 
+
+
+- What's the spread in each vector?  
+  The interquantiles of `points` is 0, 156, 432, 780, 2558.
+  
+  
+- Look at the distribution: use hist() and boxplot()
+
+```{r}
+hist(points)
+boxplot(points, horizontal = TRUE)
+```
+
+- You can also try to get a density curve (or density polygon). Find out how to do this.
+```{r}
+
+plot(density(points), ylab = "frequency(%)", xlab = "points" )
+
+
+```
+
+
+##Qualitative Variable
+- Pick one of the categorical variables: `team` or `position`  
+- If the variable that you choose is not an R factor, then use factor() to convert the object into a factor.  
+- Use table() to get a frequency table (i.e. counts of each category).  
+```{r}
+team_fre <- table(team)
+team_fre
+```
+
+- Find out how to use the obtained frequency table to calculate relative frequencies (proportions).
+
+```{r}
+team_refre <- team_fre / length(team)
+team_refre
+```
+
+- Use the frequencies (counts) and relative frequencies (proportions) to describe the overall distribution.
+  All the team has either 14 players or 15 players.
+
+- Use barplot() to display the frequencies with a barchart.
+```{r}
+barplot(team_fre, ylim=c(0,20))
+```
+
+
+##Report your process
+- What things were hard, even though you saw them in class?  
+  Understand what factor really is.
+
+
+- What was easy(-ish) even though we haven't done it in class?  
+  Using the `??` and `?` to search documentation for functions.
+  
+  
+- What type of "errors" you struggled with (if any)?  
+  To generate a more descriptive graph, including some labels and data on the graph. 
+  
+  
+- What are the parts you are not fully understanding?    
+  What is factor and what's the different between vector.
+  
+  
+- What was the most time consuming part?  
+  Trying to figure out some specific instruction. 
+  
+- Did you collaborate with other students? If so, with who? In what manner?  
+  No. I worked alone. 
+  
+  
+- Was there any frustrating issue? (e.g. RStudio cryptic error, one or more package not playing nice)   Markdown syntax sometimes doesn't work well. 
