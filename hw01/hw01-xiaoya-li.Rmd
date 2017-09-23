@@ -1,0 +1,256 @@
+---
+title: "hw01-xiaoya-li"
+author: "Xiaoya Li"
+date: "September 20, 2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#load data file
+load("data/nba2017-salary-points.RData")
+
+#list the available objects
+ls()
+```
+
+####1) Data Preprocessing
+
+
+- Create a new salary variable measured in millions of dollars, up to 2 decimal digits.
+
+```{r}
+salary_in_millions <- salary / 1000000
+round(salary_in_millions, 2)
+```
+
+- Replace the values "R" by "0", and create a new experience variable as an integer vector.
+
+```{r}
+experience_int <- as.vector(replace(experience, experience == "R", "0"), mode = "integer")
+typeof(experience_int)
+```
+
+- Create a new position variable as an R factor.
+
+```{r}
+position_fac <- factor(position, labels = c("center", "power_fwd", "point_guard", 
+                                            "small_fwd", "shoot_guard"))
+table(position_fac)
+```
+
+####2) Scatter plot of Points and Salary
+```{r}
+plot(points, salary_in_millions, col = rgb(1, 0.5, 0, 0.3),pch = 19,
+     ylab = "Salary (in millions)",
+     main = "Scatterplot of Points and Salary", cex = 1.5)
+```
+
+####3) Correlation between Points and Salary
+
+```{r}
+#number of individuals
+n <-  length(player)
+n
+```
+
+```{r}
+#mean of variable X(points)
+x_mean <- sum(points) / n
+x_mean
+```
+
+```{r}
+#mean of variable Y(salary)
+y_mean <- sum(salary_in_millions) / n
+y_mean
+```
+
+```{r}
+#variance of X
+var_x <- sum((points - x_mean) ^ 2) / (n - 1)
+var_x
+```
+
+```{r}
+#variance of Y
+var_y <- sum((salary_in_millions - y_mean) ^ 2) / (n - 1)
+var_y
+```
+
+```{r}
+#standard deviation of X
+sd_x <- sqrt(var_x)
+sd_x
+```
+
+```{r}
+#standard deviation of Y
+sd_y <- sqrt(var_y)
+sd_y
+```
+
+```{r}
+#covariance between X and Y
+cov_xy <- sum((points - x_mean) * (salary_in_millions - y_mean)) / (n - 1)
+cov_xy
+```
+
+```{r}
+#correlation between X and Y
+cor_xy <- cov_xy / (sd_x * sd_y)
+cor_xy
+```
+
+```{r}
+#confirm answer with cor() 
+cor(points, salary_in_millions)
+```
+
+####4) Simple linear regression
+```{r}
+#estimated slope of the regression line
+slope <- cor_xy * sd_y / sd_x
+slope
+```
+
+```{r}
+#estimated intercept of the regression line
+intercept <- y_mean - slope * x_mean
+intercept
+```
+
+```{r}
+#the predicted values of Y
+y_pre <- intercept + slope * points
+```
+
+- **Summary of statistics of Y-hat.**
+```{r}
+summary(y_pre)
+```
+
+- **What is the regression equation?**  
+$\hat{Y}$ = `r intercept` + `r slope` * X 
+ 
+
+- **How do you interpret the slope coefficient $b_1$ ?**  
+If you score one more point, you would expect your salary to raise `r slope` million dollars.
+
+
+- **How do you interpret the intecept term $b_0$ ?**  
+If you score 0 point, you would expect you salary to be `r intercept` million dollars.
+
+
+- **What is the predicted salary for a player that scores:**  
+      - **0 points?** 
+      - **100 points?**
+      - **500 points?**
+      - **1000 points?**
+      - **2000 points?**
+      
+```{r}
+intercept + slope * c(0, 100, 500, 1000, 2000)
+```
+
+
+####5) Plotting the regression line
+
+```{r}
+
+plot(points, salary_in_millions, col = rgb(0,0,0,0.3), pch = 19,
+    ylab = "Salary (in millions)",
+    main = "Regression and Lowess lines", cex = 1.5
+)
+abline(a = intercept, b = slope, col = "purple", lwd = 3)
+lines(lowess(points, salary_in_millions), col = "red", lwd = 3)
+text(2400, 20, "regression", col = "purple")  
+text(2300, 28, "lowess", col = "red")
+
+
+```
+
+####6) Regression residuals and Coefficient of Determination $R^2$
+
+```{r}
+#the vector of residuals (display only its summary() statistics)
+residuals_e <- salary_in_millions - y_pre
+summary(residuals_e)
+```
+
+```{r}
+#the Residual Sum of Squares
+RSS <- sum(residuals_e ^ 2)
+RSS
+```
+
+```{r}
+#the Total Sum of Squares
+TSS <- sum((salary_in_millions - y_mean) ^ 2)
+TSS
+```
+
+```{r}
+#the coefficient of determination R^2
+coeffi_of_deter <- 1 - RSS / TSS
+coeffi_of_deter
+```
+
+####7) Exploring Position and Experience
+
+```{r}
+plot(experience_int, salary_in_millions, xlab = "Year of experience",
+     ylab = "Salary (in millions)", main = "Scatterplot with lowess smooth",
+     col = rgb(0,0,0,0.3), pch = 16, cex = 1.5)
+lines(lowess(experience_int, salary_in_millions), col = "red", lwd = 3)
+
+```
+
+*description: The scatterplot shows a non-linear, weak association between year of experience and salary. The graph is bell-shaped center around 6 years of experience, with several outliers spread out above, especially after 10 years experience. *
+
+- **From the scatterplots, does Experience seem to be related with Salary?**  
+From the scatterplots, players who have less than 4 years experience earn less salary in general. However, after that, there's no linear association between experience and salary, because a longer year of experience doesn't associate with higher salaries and also the players who have experience between 4 to 13 have a widespread salary range. 
+
+```{r}
+library(scatterplot3d)
+scatterplot3d(points, experience_int, salary_in_millions,
+              ylab = "experience", zlab = "Salary",main = "3D Scatterplot",
+              pch = 19, color = rgb(1, 0.5, 0, 0.3) )
+```
+
+*description: The 3D scatterplot shows a non-linear association among salary, points, and experience. Most of the scatter are located at the lower left corner, representing the majority of players have a low salary, less than 500 points and less than 5 years experience.*
+
+
+```{r}
+boxplot(salary_in_millions ~ position_fac)
+```
+
+*description: The median for 5 different positions are almost at the same level, so does their distribution, skew to the right. The 5 box plots are all comparatively the same in Inter-quartile range, with position center having a highest Upper quartile. Except for position center, all other 4 box have outliers. *
+
+- **From the boxplot, does Position seem to be related with Salary?**  
+On average, players in different position seems to have the same salary. But when we comparing the high-income portion, players in position center have a higher salary than other positions, with the position in point guard the lowest. 
+
+####8) Comments and Reflections
+
+- **What things were hard, even though you saw them in class?**  
+Give detail description of the plots.
+
+- **Did you need help to complete the assignment? If so, what kind of help? Who helped you?**  
+Yes, I did. I need help on some plots function as well as how to describe the plots well. My GSI Xiaoqi helped me.
+
+- **How much time did it take to complete this HW?**  
+Around 4 hours.
+
+- **What was the most time consuming part?**  
+Learn how to use R to generate a detailed graph. 
+
+- **Was there anything exciting? Something that you feel proud of? (Don't be shy, we won't tell anyone).**  
+Figure out how to customize the circle in the scatter plot, filling it with different colors and making it transparent. 
+
+
+
+
+
