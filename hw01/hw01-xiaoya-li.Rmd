@@ -214,7 +214,7 @@ lines(lowess(experience_int, salary_in_millions), col = "red", lwd = 3)
 - **From the scatterplots, does Experience seem to be related with Salary?**  
 From the scatterplots, players who have less than 4 years experience earn less salary in general. However, after that, there's no linear association between experience and salary, because a longer year of experience doesn't associate with higher salaries and also the players who have experience between 4 to 13 have a widespread salary range. 
 
-```{r}
+```{r fig.width= 5, fig.height= 5}
 library(scatterplot3d)
 scatterplot3d(points, experience_int, salary_in_millions,
               ylab = "experience", zlab = "Salary",main = "3D Scatterplot",
