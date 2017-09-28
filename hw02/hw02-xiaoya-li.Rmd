@@ -1,0 +1,206 @@
+---
+title: "hw02-xiaoya-li"
+author: "Xiaoya Li"
+date: "September 27, 2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1) Create a data dictionary
+
+### 2) Import the data in R
+
+```{r}
+#using read.csv() to import data
+col_types <- c(
+  'character', 'character', 'factor','character','double',
+  'integer', 'integer','integer', 'integer', 'integer', 'integer', 'integer', 'integer', 'integer',
+  'integer','integer','integer', 'integer','integer', 'integer', 'integer', 'integer', 'integer',  'integer'
+)
+
+nba_dat <- read.csv('data/nba2017-player-statistics.csv', header = TRUE, colClasses = col_types)
+
+str(nba_dat)
+```
+
+```{r}
+#using read_csv() to import data
+library(readr)
+nba_dat <- read_csv('data/nba2017-player-statistics.csv', col_names = TRUE, 
+                    col_types = cols(Player = col_character(), Team = col_character(), 
+                                  Position = col_factor(c('C', 'PF', 'PG','SF', 'SG')),
+                                  Salary = col_double())
+                    )
+str(nba_dat)
+
+```
+
+### 3) Right after importing the data
+
+```{r}
+nba_dat$Experience[nba_dat$Experience == 'R'] <- '0'
+nba_dat$Experience <- as.integer(nba_dat$Experience)
+```
+
+### 4) Performance of players
+
+To compute **EFF**, you will have to add the following variables to your data frame:
+    - **Missed_FG** (missed field goals)
+    - **Missed_FT** (missed free throws)
+    - **PTS** (total points)
+    - **REB** (total rebounds: offensive and defensive)
+    - **MPG** (minutes per game; NOT to be used when calculating **EFF**)
+
+```{r}
+nba_dat$Missed_FG <- nba_dat$FGA - nba_dat$FGM
+nba_dat$Missed_FT <- nba_dat$FTA - nba_dat$FTM
+nba_dat$PTS <- nba_dat$Points2 * 2 + nba_dat$Points3 * 3 + nba_dat$FTM * 1 
+nba_dat$REB <- nba_dat$OREB + nba_dat$DREB
+nba_dat$MPG <- nba_dat$MIN / nba_dat$GP
+```
+
+Once you have all the necessary statistics, add a variable **EFF** to the data frame using the
+formula provided above.
+
+```{r}
+nba_dat$EFF <- (nba_dat$PTS + nba_dat$REB + nba_dat$AST + nba_dat$STL + nba_dat$BLK - 
+                  nba_dat$Missed_FG - nba_dat$Missed_FT - nba_dat$TO) / nba_dat$GP
+```
+
+Compute summary statistics for **EFF** and confirm that you have the following results, as well
+as a similar histogram:
+
+```{r}
+summary(nba_dat$EFF)
+hist(nba_dat$EFF, main = "Histogram of Efficiency (EFF)", xlab = "EFF", col = "grey")
+```
+
+- Display the player name, team, salary, and EFF value of the top-10 players by EFF in
+decreasing order (display this information in a data frame).
+
+```{r}
+nba_dat[order(nba_dat$EFF, decreasing = TRUE),][1:10, c("Player", "Team", "Salary", "EFF")]
+```
+
+- Provide the names of the players that have a negative EFF.
+
+```{r}
+nba_dat[nba_dat$EFF < 0, ]$Player
+```
+
+- Use the function cor() to compute the correlation coefficients between EFF and all the
+variables used in the EFF formula.  
+Notice that Missed_FG, Missed_FT, and TO contribute negatively to EFF, so make
+sure to take into account this negative association when calculating the correlation
+coefficients.
+
+
+```{r}
+
+cor_coefficients <- c(
+  PTS = cor(nba_dat$EFF, nba_dat$PTS),
+  REB = cor(nba_dat$EFF, nba_dat$REB),
+  AST = cor(nba_dat$EFF, nba_dat$AST),
+  STL = cor(nba_dat$EFF, nba_dat$STL),
+  BLK = cor(nba_dat$EFF, nba_dat$BLK),
+  Missed_FT = cor(nba_dat$EFF, -nba_dat$Missed_FT),
+  Missed_FG = cor(nba_dat$EFF, -nba_dat$Missed_FG),
+  TO = cor(nba_dat$EFF, -nba_dat$TO)
+)
+```
+
+- Display the computed correlations in descending order, either in a vector or a data
+frame. And create a barchart with the correlations (bars in decreasing order) like the
+one below.
+```{r}
+cor_coefficients <- cor_coefficients[order(cor_coefficients, decreasing = TRUE)]
+cor_coefficients
+
+barplot(cor_coefficients, main = "Correlations between Player Stats and EFF",
+        col = c("grey", "orange")[(cor_coefficients > 0) + 1] , border = FALSE, 
+        cex.names = 0.7, ylim=c(-1,1)
+        )
+abline(h = 0)
+```
+
+### 5) Efficiency and Salary
+
+Once you've calculated the Efficiency statistic, produce a scatterplot between Efficiency
+(x-axis) and Salary (y-axis), including a lowess smooth line (locally weighted scatterplot
+smoothing). 
+
+```{r}
+#scatterplot between Efficiency and Salary
+plot(nba_dat$EFF, nba_dat$Salary, pch = 16, col = rgb(1, 0.5, 0, 0.3),
+     main = "Scatterplot of Efficiency and Salary", xlab = "EFF", ylab = "Salary")
+#lowess smooth line
+lines(lowess(nba_dat$EFF, nba_dat$Salary), lwd = 3, col = rgb(1,0,0.5))
+text(33, 25000000, labels = "lowess", col = rgb(1,0,0.5))
+
+```
+
+Also, compute the linear correlation coefficient between them.
+
+```{r}
+cor(nba_dat$EFF, nba_dat$Salary)
+```
+
+What can you say about the relationship between these two variables?  
+<span style="color:blue"> Based on the scatterplot and the linear correlation coefficient, there's a positive association between **EFF** and **Salary**. </span>
+
+
+Because rookie players (and other low-experience players) seem to form a different universe of players, let's see what's happening with those individuals with a more "solid" or more established trajectory in the NBA.  
+    - Taking into account the column MPG (minutes per game) select those players that have an MPG value of 20 or more minutes per game.
+    - Create a data frame `players2` with these players.
+    
+```{r}
+players2 <- nba_dat[nba_dat$MPG >= 20,]
+players2
+```
+
+  - Use this data frame to create a scatterplot between Efficiency and Salary, including a lowess smooth line.
+    
+```{r}
+#scatterplot
+plot(players2$EFF, players2$Salary, main = "more established players' scatterplot of EEF and Salary",
+     xlab = "EEF", ylab = "Salary", pch = 16, col = rgb(1,0,1, 0.3))
+#lowess smooth line
+lines(lowess(players2$EFF, players2$Salary), col = rgb(0,0.5,1), lwd = 3)
+text(32, 21000000, labels = "lowess",col = rgb(0,0.5,1))
+```
+
+   - Compute the linear correlation coefficient between these variables.
+    
+```{r}
+cor(players2$EFF, players2$Salary)
+```
+
+  - What can you say about the relationship between these two variables for the set of "more established players"?  
+   <span style="color:blue"> Based on the scatterplot and linear correlation coefficient, there's still a positive association between **EFF** and **Salary**, but with a more shallow slope. </span>
+    
+### 6) Comments and Reflections 
+
+
+- What things were hard, even though you saw them in class/lab?  
+<span style="color:blue"> Make correctly use different data type. For example, sometimes you can not generate a plot of a dataframe directly, which needs to be converted to a vector first. </span>
+
+- What was easy(-ish) even though we haven't done it in class/lab?  
+<span style="color:blue"> Calculation part. </span>
+
+- Did you need help to complete the assignment? If so, what kind of help?  
+<span style="color:blue"> Yes. I look up resource online. </span>
+
+- How much time did it take to complete this HW?  
+<span style="color:blue"> Around 3 hours. </span>
+
+- What was the most time consuming part?  
+<span style="color:blue"> Try to figure out how to convert a dataframe into the data type that I want. </span>
+
+- Was there anything exciting? Something that you feel proud of?  
+<span style="color:blue"> I'm more familiar with ploting data. </span>
+
+- Was there anything that you did not understand? or fully grasped?  
+<span style="color:blue"> How to write a professional dictionary for a data file. </span>
