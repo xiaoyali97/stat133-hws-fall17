@@ -270,7 +270,8 @@ cor(nba_dat$EFF, nba_dat$Salary)
     ## [1] 0.655624
 
 What can you say about the relationship between these two variables?
-<span style="color:blue"> Based on the scatterplot and the linear correlation coefficient, there's a positive association between **EFF** and **Salary**. </span>
+
+*Based on the scatterplot and the linear correlation coefficient, there's a positive association between **EFF** and **Salary**.*
 
 Because rookie players (and other low-experience players) seem to form a different universe of players, let's see what's happening with those individuals with a more "solid" or more established trajectory in the NBA.
 - Taking into account the column MPG (minutes per game) select those players that have an MPG value of 20 or more minutes per game. - Create a data frame `players2` with these players.
@@ -322,27 +323,28 @@ cor(players2$EFF, players2$Salary)
     ## [1] 0.5367224
 
 -   What can you say about the relationship between these two variables for the set of "more established players"?
-    <span style="color:blue"> Based on the scatterplot and linear correlation coefficient, there's still a positive association between **EFF** and **Salary**, but with a more shallow slope. </span>
+
+*Based on the scatterplot and linear correlation coefficient, there's still a positive association between **EFF** and **Salary**, but with a more shallow slope. *
 
 ### 6) Comments and Reflections
 
 -   What things were hard, even though you saw them in class/lab?
-    <span style="color:blue"> Make correctly use different data type. For example, sometimes you can not generate a plot of a dataframe directly, which needs to be converted to a vector first. </span>
+    Make correctly use different data type. For example, sometimes you can not generate a plot of a dataframe directly, which needs to be converted to a vector first.
 
 -   What was easy(-ish) even though we haven't done it in class/lab?
-    <span style="color:blue"> Calculation part. </span>
+    Calculation part.
 
 -   Did you need help to complete the assignment? If so, what kind of help?
-    <span style="color:blue"> Yes. I look up resource online. </span>
+    Yes. I look up resource online.
 
 -   How much time did it take to complete this HW?
-    <span style="color:blue"> Around 3 hours. </span>
+    Around 3 hours.
 
 -   What was the most time consuming part?
-    <span style="color:blue"> Try to figure out how to convert a dataframe into the data type that I want. </span>
+    Try to figure out how to convert a dataframe into the data type that I want.
 
 -   Was there anything exciting? Something that you feel proud of?
-    <span style="color:blue"> I'm more familiar with ploting data. </span>
+    I'm more familiar with ploting data.
 
 -   Was there anything that you did not understand? or fully grasped?
-    <span style="color:blue"> How to write a professional dictionary for a data file. </span>
+    How to write a professional dictionary for a data file.

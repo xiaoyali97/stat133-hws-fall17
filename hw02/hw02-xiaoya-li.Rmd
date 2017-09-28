@@ -62,16 +62,14 @@ nba_dat$REB <- nba_dat$OREB + nba_dat$DREB
 nba_dat$MPG <- nba_dat$MIN / nba_dat$GP
 ```
 
-Once you have all the necessary statistics, add a variable **EFF** to the data frame using the
-formula provided above.
+Once you have all the necessary statistics, add a variable **EFF** to the data frame using the formula provided above.
 
 ```{r}
 nba_dat$EFF <- (nba_dat$PTS + nba_dat$REB + nba_dat$AST + nba_dat$STL + nba_dat$BLK - 
                   nba_dat$Missed_FG - nba_dat$Missed_FT - nba_dat$TO) / nba_dat$GP
 ```
 
-Compute summary statistics for **EFF** and confirm that you have the following results, as well
-as a similar histogram:
+Compute summary statistics for **EFF** and confirm that you have the following results, as well as a similar histogram:
 
 ```{r}
 summary(nba_dat$EFF)
@@ -148,8 +146,10 @@ Also, compute the linear correlation coefficient between them.
 cor(nba_dat$EFF, nba_dat$Salary)
 ```
 
-What can you say about the relationship between these two variables?  
-<span style="color:blue"> Based on the scatterplot and the linear correlation coefficient, there's a positive association between **EFF** and **Salary**. </span>
+What can you say about the relationship between these two variables?    
+
+
+*Based on the scatterplot and the linear correlation coefficient, there's a positive association between **EFF** and **Salary**.*
 
 
 Because rookie players (and other low-experience players) seem to form a different universe of players, let's see what's happening with those individuals with a more "solid" or more established trajectory in the NBA.  
@@ -179,28 +179,30 @@ cor(players2$EFF, players2$Salary)
 ```
 
   - What can you say about the relationship between these two variables for the set of "more established players"?  
-   <span style="color:blue"> Based on the scatterplot and linear correlation coefficient, there's still a positive association between **EFF** and **Salary**, but with a more shallow slope. </span>
+
+
+*Based on the scatterplot and linear correlation coefficient, there's still a positive association between **EFF** and **Salary**, but with a more shallow slope. *
     
 ### 6) Comments and Reflections 
 
 
 - What things were hard, even though you saw them in class/lab?  
-<span style="color:blue"> Make correctly use different data type. For example, sometimes you can not generate a plot of a dataframe directly, which needs to be converted to a vector first. </span>
+Make correctly use different data type. For example, sometimes you can not generate a plot of a dataframe directly, which needs to be converted to a vector first.
 
 - What was easy(-ish) even though we haven't done it in class/lab?  
-<span style="color:blue"> Calculation part. </span>
+Calculation part. 
 
 - Did you need help to complete the assignment? If so, what kind of help?  
-<span style="color:blue"> Yes. I look up resource online. </span>
+Yes. I look up resource online. 
 
 - How much time did it take to complete this HW?  
-<span style="color:blue"> Around 3 hours. </span>
+Around 3 hours. 
 
 - What was the most time consuming part?  
-<span style="color:blue"> Try to figure out how to convert a dataframe into the data type that I want. </span>
+Try to figure out how to convert a dataframe into the data type that I want. 
 
 - Was there anything exciting? Something that you feel proud of?  
-<span style="color:blue"> I'm more familiar with ploting data. </span>
+I'm more familiar with ploting data.
 
 - Was there anything that you did not understand? or fully grasped?  
-<span style="color:blue"> How to write a professional dictionary for a data file. </span>
+How to write a professional dictionary for a data file. 
