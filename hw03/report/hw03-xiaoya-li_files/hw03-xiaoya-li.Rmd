@@ -1,0 +1,154 @@
+---
+title: "hw03-xiaoya-li.Rmd"
+author: "Xiaoya Li"
+date: "October 6, 2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+teams <- read.csv("../../data/nba2017-teams.csv")
+```
+
+# Ranking of Teams
+
+### Basic Rankings
+
+**Start by ranking the teams according to salary, arranged in decreasing order.The vertical red line
+is the average team salary.**
+
+```{r}
+ggplot(data = teams, aes(x = reorder(team, salary), y = salary)) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  geom_hline(yintercept = mean(teams$salary), size = 2, colour = rgb(1,0.3,0,0.5)) +
+  labs(y = "Salary (in millions)", x = "Team", title = "NBA Teams ranked by Total Salary")
+```
+
+
+**Create another bar chart of teams ranked by total points. The vertical red line is the average
+team points.**
+
+```{r}
+ggplot(data = teams, aes(x = reorder(team, points), y = points)) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  geom_hline(yintercept = mean(teams$points), size = 2, colour = rgb(1,0.3,0,0.5)) +
+  labs(y = "Total Points", x = "Team", title = "NBA Teams ranked by Total Points")
+```
+
+**Use efficiency to obtain a third kind of ranking, and create an associated bar chart of
+teams ranked by total efficiency. The vertical red line is the average team efficiency.**
+
+```{r}
+ggplot(data = teams, aes(x = reorder(team, efficiency), y = efficiency)) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  geom_hline(yintercept = mean(teams$efficiency), size = 2, colour = rgb(1,0.3,0,0.5)) +
+  labs(y = "Total Efficiency", x = "Team", title = "NBA Teams ranked by Total Efficiency")
+```
+
+**Provide concise descriptions of the obtained rankings so far.**\
+- *ranked by Total Salary: Around half of the teams are above the average salary, where CLE ranked the first with more than 120 millions total salary.*\
+- *ranked by Total Points: More than half of the teams are above the average total points, where GSW ranked the first with more than 8750 total points.*\
+- *ranked by Total Efficiency: Only 9 teams out of 30 are above the average efficiency, where CLE ranked the first with more than 175 index of efficiency.*\
+
+# Principal Components Analysis (PCA)
+
+**Perform a principal components analysis (PCA) on the following variables, to use the first
+principal component (PC1) as another index to rank the teams:**
+
+```{r}
+teams_pca <- prcomp(select(teams, points3, points2, free_throws, off_rebounds, def_rebounds,
+                           assists, steals, blocks, turnovers, fouls), scale. = TRUE)
+teams_pca
+```
+
+**Createa a data frame with the eigenvalues:**
+
+```{r}
+eigs <- data.frame(
+  "eigenvalues" = round(teams_pca$sdev ^ 2, 4),
+  "prop" = round( teams_pca$sdev ^ 2 / sum(teams_pca$sdev ^ 2), 4),
+  "cumprop" = round(cumsum(teams_pca$sdev ^ 2 / sum(teams_pca$sdev ^ 2)), 4),
+  row.names = 1:10
+)
+eigs
+
+```
+
+**Use the first two PCs to get a scatterplot of the teams**
+
+```{r}
+teams_pca$x <- as.data.frame(teams_pca$x)
+
+ggplot(data = teams_pca$x, aes(x = PC1, y = PC2)) + 
+  geom_point() +
+  geom_text(aes(label = teams$team), vjust = 1.25) +
+  labs(title = "PCA plot (PC1 and PC2)") +
+  geom_hline(yintercept = 0, size = 1, color = "grey") +
+  geom_vline(xintercept = 0, size = 1, color = "grey")
+```
+
+### Index based on PC1
+
+**In order to build an index based on the first PC, you are going to transform PC1. To get a
+more meaningful scale, you can rescale the first PC with a new scale ranging from 0 to 100.**
+
+```{r}
+s_1 <- 100 * (teams_pca$x$PC1 - min(teams_pca$x$PC1)) / (max(teams_pca$x$PC1) - min(teams_pca$x$PC1))
+```
+
+**Once you have obtained the rescaled PC1, you can produce a barchart like the previous ones:**
+
+```{r}
+teams$PC1 = s_1
+ggplot(data = teams , aes(x = reorder(team, PC1), y = PC1)) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  labs(y = "First PC (scaled from 0 to 100)", x = "Team", title = "NBA Teams ranked by scaled PC1")
+```
+
+**Provide a brief description of the PC1 index to rank the teams.**\
+*Ranked by the first PC, GSW ranked the first way higher than the second with index 100; while SAC ranked the last with index 0.*
+
+# Comments and Reflections
+
+- **Was this your first time working on a project with such file structure? If yes, how do
+you feel about it?**\
+Yes, it was. The file structure is very organized.\
+
+- **Was this your first time using relative paths? If yes, can you tell why they are important
+for reproducibility purposes?**\
+Yes, it was. Because it will ensure that if you move the project location, you can still access each file without an error.\
+
+- **Was this your first time using an R script? If yes, what do you think about just writing
+code?**\
+Yes, it was. I feel more comfortable becasue I don't need to deal with the format of output.\
+
+- **What things were hard, even though you saw them in class/lab?**\
+The PCA process and the meaning of doing each step.\
+
+- **What was easy(-ish) even though we haven't done it in class/lab?**\
+Using ggplot to generate different plots.\
+
+- **Did anyone help you completing the assignment? If so, who?**\
+No. I did everything on my own.\
+
+- **How much time did it take to complete this HW?**\
+Around 4 hours.\
+
+- **What was the most time consuming part?**\
+Understanding the PCA process.\
+
+- **Was there anything interesting?**\
+Using ggplot to generate different plots.\
+
+
