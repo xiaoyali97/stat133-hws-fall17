@@ -20,7 +20,7 @@ library(dplyr)
     ##     intersect, setdiff, setequal, union
 
 ``` r
-teams <- read.csv("../../data/nba2017-teams.csv")
+teams <- read.csv("../data/nba2017-teams.csv")
 ```
 
 Ranking of Teams
@@ -68,7 +68,9 @@ ggplot(data = teams, aes(x = reorder(team, efficiency), y = efficiency)) +
 - *ranked by Total Salary: Around half of the teams are above the average salary, where CLE ranked the first with more than 120 millions total salary.*
 - *ranked by Total Points: More than half of the teams are above the average total points, where GSW ranked the first with more than 8750 total points.*
 - *ranked by Total Efficiency: Only 9 teams out of 30 are above the average efficiency, where CLE ranked the first with more than 175 index of efficiency.*
-\# Principal Components Analysis (PCA)
+
+Principal Components Analysis (PCA)
+===================================
 
 **Perform a principal components analysis (PCA) on the following variables, to use the first principal component (PC1) as another index to rank the teams:**
 
