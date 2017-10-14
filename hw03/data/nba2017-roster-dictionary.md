@@ -4,10 +4,10 @@
 2. Description: This database is a roster of NBA player in 2017.
 
 
-3. Main source: 
+3. Main source: <https://www.basketball-reference.com/>
 
 
-4. Sample link: 
+4. Sample link: <https://www.basketball-reference.com/teams/GSW/2017.html>
 
 
 5. Attribute information:
