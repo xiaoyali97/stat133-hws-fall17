@@ -21,10 +21,7 @@ nba_stat <- mutate(
   missed_fg = field_goals_atts - field_goals_made,
   missed_ft = points1_atts - points1_made,
   points = points3_made * 3 + points2_made * 2 + points1_made,
-  # TODO
-  #points = points3_made  + points2_made  + points1_made,
   rebounds = off_rebounds + def_rebounds,
-                   
   efficiency = (points + rebounds + assists + steals + blocks - missed_fg 
                 - missed_ft - turnovers) / games_played
   )
@@ -40,9 +37,7 @@ nba_roster_stat <- merge(nba_roster, nba_stat)
 teams <- nba_roster_stat %>% 
   group_by(team) %>% 
   summarise(
-    # TODO 
-    #experience = round(sum(experience), 2),
-    experience = round(mean(experience), 2),
+    experience = round(sum(experience), 2),
     salary = round(sum(salary) / 1000000, 2),
     points3 = sum(points3_made),
     points2 = sum(points2_made),
@@ -75,11 +70,8 @@ dev.off()
 pdf(file = "./stat133-hws-fall17/hw03/images/experience_salary.pdf", width = 7, height = 5)
 ggplot(data = teams, aes(x = experience, y = salary)) +
   geom_point() +
-  geom_text(aes(label = team), vjust = 1.5) +
-  scale_y_continuous(limits=c(25, 175)) +
-  scale_x_continuous(limits = c(2,9))
+  geom_text(aes(label = team), vjust = 1.5)
 dev.off()
-
 
 
 
