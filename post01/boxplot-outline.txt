@@ -1,0 +1,51 @@
+1. Introduction:
+  What kinds of data visualiztion are we using? 
+  What's their advantages? 
+  What the advantage specifically for box plot? 
+
+2. Box plot terminologies: 
+  What are each component of a box plot?
+  Different types of box plots (main different is the values of the ends of the whiskers)
+    - specify how R represent the whiskers
+  Notched Box plot
+  
+3. Box plot interpretation:
+  How do we interpret box plot in general? 
+    5 statistic summary
+    spread
+    approximate shape of the distribution
+    Outliers
+    comparison if many groups present
+  some examples.
+  
+4. How to draw a box plot in R?
+  Review: Using R-basic package
+  Using ggplot
+  (Maybe more packages introduced...)
+  Add some features and variation of the plot
+  
+5. Discussion
+  Sample size may affect our box plot 
+  Box plot may be misleading, the more information you have, the more acurate of your interpretation
+
+6. Conclusion
+
+  
+7. Reference
+http://www.physics.csbsju.edu/stats/box2.html
+https://en.wikipedia.org/wiki/Box_plot#Types_of_box_plots
+http://support.minitab.com/en-us/minitab-express/1/help-and-how-to/graphs/boxplot/interpret-the-results/key-results/
+http://blog.minitab.com/blog/statistics-and-quality-data-analysis/how-to-think-outside-the-boxplot
+https://en.wikipedia.org/wiki/Quantile
+http://www.cvgs.k12.va.us/digstats/main/inferant/a_gpas.html
+http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html#Box%20Plot
+https://plot.ly/ggplot2/box-plots/
+https://sites.google.com/site/davidsstatistics/home/notched-box-plots
+http://www.sthda.com/english/wiki/ggplot2-box-plot-quick-start-guide-r-software-and-data-visualization
+http://had.co.nz/stat645/project-03/boxplots.pdf
+
+
+
+
+
+  
