@@ -104,8 +104,14 @@ Here's the simple R code using `ggplot()` and `geom_tile()`.
 
 ```{r}
 ggplot(airquality, aes(Day, Month)) +
+  #build the heat map
   geom_tile(aes(fill = Temp)) +
-  ggtitle(label = "Heat Map")
+  
+  #reverse legend color such that dark color related to higher temperature 
+  scale_fill_gradient(high = "#132B43", low = "#56B1F7") +
+  
+  #add a title
+  ggtitle(label = "Heat Map") 
   
 ```
 
