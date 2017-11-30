@@ -2,7 +2,7 @@
 title: "Post02: Advanced Visualization"
 author: "Xiaoya Li"
 date: "November 26, 2017"
-output: github_document
+output: html_document
 always_allow_html: yes
 ---
 
