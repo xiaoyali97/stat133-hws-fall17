@@ -1,0 +1,255 @@
+---
+title: "Lab08"
+author: "Xiaoya Li"
+date: "October 19, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## For loops
+rewrite the for loop in order to triple every element in vec, and printing the output at each step of the loop:
+
+```{r}
+vec <- c(4, 7, 10) # Change this value!
+
+for (j in 1:3) { # Replace c() with an appropriate sequence.
+  # Fill in.
+  vec[j] = 3 * vec[j]
+  print(vec[j])
+}
+```
+
+What if you want to create a vector vec2, in which you store the values produced at each iteration of the loop? Here's one possibility:
+
+```{r}
+vec <- c(4, 7, 10)  # Change this value!
+vec2 <- rep(0, length(vec))  # "empty" of zeros vector to be filled in the loop
+
+for (i in 1:3) {# Replace c() with an appropriate sequence.
+  # Fill in.
+  vec2[i] = 3 * vec[i]
+  print(vec2[i])
+}
+```
+
+## Summation Series
+
+Write a for loop to compute the following two series. Your loop should start at step k = 0 and stop at step n. Test your code with different values for n. And store each k-th term at each iteration. Does the series converge as n increase?
+
+$$ \sum_{k=0}^{n} \frac{1}{2^k} = 1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \dots + \frac{1}{2^n} $$
+
+```{r}
+summation1 <- function(n){
+  vec <- rep(0, n + 1)
+  sum = 0
+  for (i in 0:n) {
+   vec[i + 1] = 1 / (2 ^ i)
+   sum = sum + vec[i + 1]
+  }
+  print(sum)
+  return(vec)
+}
+
+n_10 = summation1(10)
+n_100 = summation1(100)
+n_1000 = summation1(1000)
+# The serie converges to 2 as n increase.
+```
+
+$$ \sum_{k=0}^{n} \frac{1}{9^k} =1 + \frac{1}{9} + \frac{1}{81} + \dots + \frac{1}{9^n} $$
+
+```{r}
+summation2 <- function(n){
+  vec <- rep(0, n + 1)
+  sum = 0
+  for (i in 0:n) {
+   vec[i + 1] = 1 / (9 ^ i)
+   sum = sum + vec[i + 1]
+  }
+  print(sum)
+  return(vec)
+}
+
+n_10 = summation2(10)
+n_100 = summation2(100)
+n_1000 = summation2(1000)
+# The serie converges to 1.125 as n increase.
+```
+
+## Arithmetic Series
+
+Write a for loop to compute the following arithmetic series an = a1 + (n ??? 1)d when a1 = 3, and d = 3. For instance: 3 + 6 + 12 + 24 + ..
+Test your code with different values for n. And store each n-th term at each iteration. Does the series converge as n increase?
+
+```{r}
+arithmetic1 <- function(n){
+  a_n = rep(0, n)
+  a_1 = 3
+  d = 3
+  sum = 0
+  for (i in 1:n){
+    a_n[i] = a_1 + (i - 1) * d
+    sum = sum + a_n[i]
+  }
+  print(sum)
+  return(a_n)
+}
+
+n_10 <- arithmetic1(10)
+n_100 <- arithmetic1(100)
+n_1000 <- arithmetic1(1000)
+#the series does not converge as n increase
+```
+
+## Geometric Sequence
+
+Write a for loop to compute the sum of the first n terms of: 3 + 6 + 12 + 24 + .. Test your code with different values for n. Does the series converge as n increase?
+
+```{r}
+geometric <- function(n){
+  a_n = rep(0, n)
+  a_1 = 3
+  r = 3
+  sum = 0
+  for (i in 1:n){
+    a_n[i] = a_1 * (r ^ (i - 1))
+    sum = sum + a_n[i]
+  }
+  print(sum)
+  return(a_n)
+}
+
+n_10 <- geometric(10)
+n_100 <- geometric(100)
+n_1000 <- geometric(1000)
+# the series does not converge as n increase
+```
+
+## Sine Approximation
+
+Consider the following series that is used to approximate the function sin(x):
+$$ sin(x) \approx x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \dots $$
+
+Write a for loop to approximate sin(x). Try different number of terms, n = 5, 10, 50, 100. Compare your loop with the sin() function.
+
+```{r}
+my_sin <- function(x,n){
+  sum = 0
+  for(i in 1:n){
+    sum = sum + (-1) ^ (i + 1) * x ^ (2 * i - 1) / factorial(2 * i - 1)
+  }
+  print(sum)
+}
+
+sin(5)
+my_sin(5,5)
+my_sin(5,10)
+my_sin(5,50)
+my_sin(5,100)
+```
+
+## For loop with a matrix
+
+Consider the following matrix X:
+
+```{r}
+set.seed(123)
+X <- matrix(rnorm(12), nrow = 4, ncol = 3)
+X
+```
+
+Write code in R, using loops, to get a matrix Y such that the negative numbers in A are transformed into squared values, while the positive numbers in A are transformed into square root values
+
+```{r}
+Y <- matrix(nrow = 4, ncol = 3)
+
+for(i in 1:4){
+  for(j in 1:3){
+    x = X[i,j]
+    if(x < 0){
+      Y[i, j] = x ^ 2
+    }
+    else{
+      Y[i, j] = sqrt(x)
+    }
+  }
+}
+
+Y
+```
+
+## Dividing a number by 2 multiple times
+## Make a reduce() function
+
+Now generalize the above code to create a function reduce() which performs the same operation. (You should change very little.)
+
+```{r}
+# your reduce() function
+reduce <- function(x) {
+  # Fill in.
+  while (x %% 2 == 0) { # Continue the loop as long as val_while is even.
+   x <- x / 2
+   print(x)
+  }
+}
+
+reduce(898128000)
+
+```
+
+## Average
+
+The average of n numbers x1, x2, ., xn is given by the following formula:
+$$ \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i = \frac{x_1 + x_2 + \dots + x_n}{n} $$
+
+Write R code, using each type of loop (e.g. for, while, repeat) to implement the arithmetic mean of the vector x = 1:100
+
+```{r}
+x = 1:100
+sum = 0
+for(i in x){
+  sum = sum + x[i]
+}
+average = sum / length(x)
+average
+mean(x)
+```
+
+## Standard Deviation
+
+The sample standard deviation of a list of n numbers x1, x2, ., xn is given by the following formula:
+$$ SD = \sqrt{ \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2 } $$
+
+Write R code, using each type of loop (e.g. for, while, repeat) to implement the sample standard deviation of the vector x = 1:100
+
+```{r}
+sum = 0
+for(i in x){
+  sum = sum + (x[i] - average) ^ 2
+}
+standard_deviation = sqrt(sum / (length(x) - 1))
+standard_deviation
+sd(x)
+
+```
+
+## Geometric Mean
+
+The geometric mean of n numbers x1, x2, ., xn is given by the following formula:
+$$ \bar{x} = \left ( \prod_{i=1}^{n} x_i \right )^{1/n} $$
+
+Write R code, using each type of loop (e.g. for, while, repeat) to implement the geometric mean of the vector x = 1:50
+
+```{r}
+x = 1:50
+product = 1
+for(i in x){
+  product = product * x[i]
+}
+geo_mean <- product ^ (1 / length(x))
+geo_mean
+```
+

@@ -1,0 +1,123 @@
+---
+title: "Lab 9: Random Number and Simulations"
+author: "Xiaoya Li"
+date: "October 26, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+
+### A less basic probability problem
+
+You can manually find the probabilities of the previous example. However, not all real problems have an analytic solution. Consider the following situation. There are two boxes with balls of different colors. Box 1 contains two blue balls, and one red ball. Box 2 contains two blue balls, three red balls, and one white ball.
+
+
+The random experiment consists of generating a random number that follows a uniform distribution (min = 0, max = 1). If the number is greater than 0.5, then a sample with replacement of size 4 is drawn from box 1. If the random number is less than or equal to 0.5, then a sample without replacement of size is drawn from box 2. The goal is to find the probability distribution for the number of blue balls. In other words:
+- Probability of 0 blue balls
+- Probability of 1 blue ball
+- Probability of 2 blue balls
+- Probability of 3 blue balls
+- Probability of 4 blue balls
+
+
+1. Create two character vectors box1 and box2 with colors of balls:
+
+```{r}
+# your vectors box1 and box2
+box1 <- c("blue", "blue", "red")
+box2 <- c("blue", "blue", "red", "red", "red", "white")
+```
+
+2. The random experiment involves generating a uniform random number using runif(1). If this number is greater than 0.5, get a sample() with replacement of size = 4 from box1. Otherwise, get a sample() without replacement of size = 4 from box2.
+
+```{r}
+# your code to simulate one random experiment
+random_num <- runif(1)
+if(random_num > 0.5){
+  one_sample <- sample(box1, size = 4, replace = TRUE)
+}else{
+  one_sample <- sample(box2, size = 4)
+}
+```
+
+3. Repeat the experiment 1000 times using a for loop. To store the drawn samples, use a matrix drawn_balls. This matrix will have 1000 rows and 4 columns. In each row you assign the output of a random sample of balls.
+
+```{r}
+# your code to draw the balls according to the random experiment
+# (repeated 1000 times)
+
+repetition <- 1000
+drawn_balls <- matrix("",nrow = repetition, ncol = 4)
+
+for(i in 1:repetition){
+  random_num <- runif(1)
+  if(random_num > 0.5){
+    drawn_balls[i,] <- sample(box1, size = 4, replace = TRUE)
+  }else{
+    drawn_balls[i,] <- sample(box2, size = 4)
+  }
+}
+
+drawn_balls[1:5, 1:4]
+```
+
+4. Once you filled the matrix drawn_balls, compute the proportion of samples containing: 0, 1, 2, 3, or 4 blue balls.
+
+```{r}
+num_blues <- rep(0, repetition)
+     count_blues <- list(
+       count_0 = rep(0,repetition),
+       count_1 = rep(0,repetition),
+       count_2 = rep(0,repetition),
+       count_3 = rep(0,repetition),
+       count_4 = rep(0,repetition)
+     )
+     
+     
+     for(i in 1:repetition){
+       for(j in 0:4){
+         num_blues[i] <- sum(drawn_balls[i,] == "blue")
+         if(num_blues[i] == j){
+           count_blues[[j+1]][i] = 1 
+         }
+       }
+     }
+
+prop <- rep(0, 5)
+for(i in 0:4){
+  prop[i+1] <- sum(num_blues == i) / repetition  
+}
+prop
+```
+
+5. Try to obtain the following plot showing the relative frequencies of number of blue balls over the series of repetitions.
+
+```{r}
+num_blues_dat <- data.frame(
+       reps = rep(1:repetition,5),
+       number = rep(0:4, each = repetition),
+       freqs = c(cumsum(count_blues[[1]]) / 1:repetition,
+                 cumsum(count_blues[[2]]) / 1:repetition,
+                 cumsum(count_blues[[3]]) / 1:repetition,
+                 cumsum(count_blues[[4]]) / 1:repetition,
+                 cumsum(count_blues[[5]]) / 1:repetition)
+     )
+num_blues_dat$number <- as.factor(num_blues_dat$number)
+```
+
+```{r}
+ggplot(num_blues_dat, aes(x = reps, y = freqs, color = number, group = number)) +
+       geom_line() +
+       ggtitle("Relative frequencies of number of blue balls") 
+```
+
+
+

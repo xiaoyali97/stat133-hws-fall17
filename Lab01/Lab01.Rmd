@@ -1,0 +1,139 @@
+---
+title: "Lab01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+variables
+```{r}
+phone <- 80
+transportation <- 20
+groceries <- 527
+gym <- 10
+rent <- 1500
+other <- 83
+```
+
+total expense
+```{r}
+total <- phone + transportation + groceries + gym + rent + other
+total
+```
+
+semester expenses
+```{r}
+total * 5
+```
+
+year expenses
+```{r}
+total * 10
+```
+
+your vector expenses
+```{r}
+expense <- c(phone, transportation, groceries, gym, rent, other)
+barplot(expense)
+```
+
+```{r}
+expense <- sort(expense, decreasing = TRUE)
+
+## Find a range of y's that'll leave sufficient space above the tallest bar
+ylim <- c(0, 1.1*max(expense))
+## Plot, and store x-coordinates of bars in xx
+expense_plot <- barplot(expense, ylim = ylim, names.arg = c("rent", "groceries",                            "other", "phone", "transport", "gym"))
+## Add text at top of bars
+text(x = expense_plot, y = expense, label = expense, pos = 3, cex = 0.8, col = "red")
+```
+
+# Pythagoras formula
+```{r}
+a <- 3
+b <- 4
+c <- sqrt(a ^ 2 + b ^ 2)
+c
+```
+
+# Binomial Formula
+Let's consider a simple example. A fair coin is tossed 5 times. What is the probability of getting exactly 2 heads?
+
+Create the objects n, k, and p for the number of trials, the number of success, and the probability of success, respectively.
+```{r}
+n <- 5
+k <- 2
+p <- 1/2
+```
+
+Use factorial() to compute the number of combinations "n choose k"
+```{r}
+n_choose_k <- factorial(n)/(factorial(k) * factorial(n - k))
+```
+
+Apply the binomial formula, using factorial(), to calculate the probability of getting exactly 2 heads out of 5 tosses.
+```{r}
+n_choose_k * (p ^ k) * (1 - p) ^ (n - k)
+```
+
+
+Recalculate the same probability but now using choose() (instead of factorial())
+```{r}
+choose(n, k) * (p ^ k) * (1 - p) ^ (n - k) 
+```
+
+Consider rolling a fair die 10 times. What is the probability of getting exactly 3 sixes?
+```{r}
+n2 <- 10
+k2 <- 3
+p2 <- 1/6
+choose(n2, k2) * (p2 ^ k2) * (1 - p2) ^ (n2 - k2) 
+```
+
+
+Now look for help documentation (e.g. help.search() or ??) using the keyword binomial: binomial.
+```{r}
+??binomial
+```
+
+You should get a list of topics related with the searched term binomial.
+
+Choose the one related with the Binomial Distribution, which is part of the R package stats (i.e. stats::Binomial).
+
+Read the documentation and figure out how to use the dbinom() function to obtain the above probabilities: 2 heads in 5 coin tosses, and 3 sixes in 3 rolls of a die.
+```{r}
+dbinom(k, n, p)
+dbinom(k2, n2, p2)
+```
+
+
+How would you modify the previous binomial function to calculate the same probability (2 heads in 5 tosses) of a biased coin with a chance of heads of 35%?
+```{r}
+dbinom(k, n, p = 0.35)
+```
+
+
+Finally, obtain the probability of getting more than 3 heads in 5 tosses with a biased coin of 35% chance of heads.
+```{r}
+dbinom(4, 5, 0.35) + dbinom(5, 5, 0.35)
+```
+# Installing Packages
+Install packages "stringr", "RColorBrewer", and "XML"
+```{r}
+install.packages(c("stringr", "RColorBrewer", "XML"), repos = "http://cran.us.r-project.org")
+```
+
+Calculate: 3x2^2+ 4x+8 when x=2
+```{r}
+x <- 2
+3 * 2 ^ 2 + 4 * x + 8
+```
+
+Calculate: 3x2+4x+8 but now with a numeric sequence for x using x <- -3:3
+```{r}
+x <- -3:3
+3 * 2 ^ 2 + 4 * x + 8
+```
+

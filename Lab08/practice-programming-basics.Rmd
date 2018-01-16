@@ -1,0 +1,165 @@
+---
+title: "Practice-PorgrammingBasic"
+author: "Xiaoya Li"
+date: "October 19, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+### 1) Toggling Switches
+
+A room contains 100 toggle switches, originally all turned off. These switches can be initialized
+in R with the following character vector switches:
+```{r}
+num_switches <- 100
+switches <- rep("off", num_switches)
+head(switches)
+```
+
+100 people enter the room in turn. The first person toggles every switch, the second toggles every second switch, the third every third switch, and so on, to the last person who toggles the last switch only. Write R code to find out, at the end of this toggling process, which switches are turned on.
+
+```{r}
+#define a funtion that toggle the switch
+toggle <- function(x){
+  if(x == "off"){
+    x = "on"
+  }
+  else{
+    x = "off"
+  }
+  return(x)
+}
+
+for(i in 1:num_switches){
+  pos = i
+  repeat{
+    switches[pos] = toggle(switches[pos])
+    pos = pos + i
+    if(pos > num_switches){
+      break
+    }
+  }
+}
+
+names(switches) = 1:num_switches
+switches[switches == "on"]
+```
+
+### 2) Distance Matrix of Letters
+
+The following code generates a random matrix distances with arbitrary distance values among letters in English:
+
+```{r}
+# random distance matrix
+num_letters <- length(LETTERS)
+set.seed(123)
+values <- sample.int(num_letters)
+distances <- values %*% t(values)
+diag(distances) <- 0
+dimnames(distances) <- list(LETTERS, LETTERS)
+```
+
+```{r}
+distances[1:5, 1:5]
+```
+
+Consider the following character vector vec <- c('E', 'D', 'A'). The idea is to use the values in matrix distances to compute the total distance between the letters: that is from E to D, and then from D to A:
+
+```{r}
+# (E to D) + (D to A)
+483 + 168
+```
+
+a) Write a function get_dist() that takes two inputs:
+
+- distances = the matrix of distance among letters.
+- ltrs = a character vector of upper case letters.
+
+The function must return a numeric value with the total distance. Also, include a stopping condition-via stop()-for when a value in ltrs does not match any capital letter. The error message should be "Unrecognized character".
+
+```{r}
+get_dist <- function(distances, ltrs){
+  dist = 0
+  
+  for(i in 1:(length(ltrs) - 1)){
+    from = ltrs[i]
+    to = ltrs[i + 1]
+    if(from %in% LETTERS & to %in% LETTERS){
+      dist = dist + distances[from, to]
+    }else{
+      stop("Unrecognized character")
+    }
+  }
+  return(dist)
+}
+```
+
+Here's an example of how you should be able to invoke get_dist():
+
+```{r}
+vec <- c('E', 'D', 'A')
+get_dist(distances, vec)
+```
+
+And here's an example that should raise an error:
+
+```{r}
+err <- c('E', 'D', ')')
+get_dist(distances, err)
+```
+
+Test your function with the following character vectors:
+
+```{r}
+cal <- c('C', 'A', 'L')
+stats <- c('S', 'T', 'A', 'T', 'S')
+oski <- c('O', 'S', 'K', 'I')
+zzz <- rep('Z', 3)
+lets <- LETTERS
+#a vector first with letters for your first name, e.g. c('G', 'A', 'S', 'T', 'O','N')
+first <- c('X','I','A','O','Y','A')
+#a vector last for your last name, e.g. c('S', 'A', 'N', 'C', 'H', 'E', 'Z')
+last <- c('L','I')
+
+get_dist(distances,cal)
+get_dist(distances,stats)
+get_dist(distances,oski)
+get_dist(distances,zzz)
+get_dist(distances,lets)
+get_dist(distances,first)
+get_dist(distances,last)
+
+```
+
+b) Assuming that you alredy created the objects listed above, now create an R list strings
+like this:
+
+```{r}
+# use your own 'first' and 'last' objects
+strings <- list(
+  cal = cal,
+  stats = stats,
+  oski = oski,
+  zzz = zzz,
+  lets = lets,
+  first = first,
+  last = last
+)
+```
+
+Write a for() loop to iterate over the elements in strings, and compute their distances. At each iteration, store the calculated distances in a list called strings_dists; this list should have the same names as strings.
+
+```{r}
+strings_dists <- list(names = names(strings))
+
+for(s in names(strings)){
+  strings_dists[s] = get_dist(distances, strings[[s]])
+}
+
+strings_dists
+```
+
+### 3) Vending Machine

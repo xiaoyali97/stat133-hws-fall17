@@ -1,0 +1,275 @@
+---
+title: "Lab12"
+author: "Xiaoya Li"
+date: "November 30, 2017"
+output: html_document
+---
+
+```{r}
+library(XML)
+library(xml2)
+library(rvest)
+library(magrittr)
+library(stringr)
+```
+
+
+#### Roster tables
+
+```{r}
+# Assemble url (so it fits on screen)
+basket <- "https://www.basketball-reference.com"
+gsw <- "/teams/GSW/2017.html"
+gsw_url <- paste0(basket, gsw)
+
+# download HTML file to your working directory
+download.file(gsw_url, 'gsw-roster-2017.html')
+
+# Read GSW Roster html table
+gsw_roster <- readHTMLTable('gsw-roster-2017.html')
+gsw_roster
+
+```
+
+
+```{r}
+# Assemble url (so it fits on screen)
+basket <- "https://www.basketball-reference.com"
+bos <- "/teams/BOS/2017.html"
+bos_url <- paste0(basket, bos)
+
+# download HTML file to your working directory
+download.file(bos_url, 'bos-roster-2017.html')
+
+# Read BOS Roster html table
+bos_roster <- readHTMLTable('bos-roster-2017.html')
+```
+
+
+### Extracting HTML elements
+
+```{r}
+#read the contents of the html file
+nba_html <- paste0(basket, "/leagues/NBA_2017.html")
+
+xml_doc <- read_html(nba_html)
+xml_text <- xml_doc %>% html_text()
+
+```
+
+
+**Extracting elements h2**
+```{r}
+# content of h2 nodes
+xml_doc %>%
+  html_nodes("h2") %>%
+  html_text() 
+```
+
+
+Use html_nodes() and html_text() to extract the values of nodes:
+
+- "h1"
+- "strong"
+- "button"
+
+```{r}
+#h1 
+xml_doc %>% 
+  html_nodes("h1") %>% 
+  html_text()
+```
+
+```{r}
+#strong
+xml_doc %>% 
+  html_nodes("strong") %>% 
+  html_text()
+```
+
+```{r}
+#button
+xml_doc %>% 
+  html_nodes("button") %>% 
+  html_text()
+
+```
+
+
+```{r}
+# node with an attribute
+xml_doc %>%
+  html_nodes("p.listhead") %>%
+  html_text()
+```
+
+### XPath
+
+```{r}
+xml_doc %>%
+  html_nodes(xpath = '//p[@class="listhead"]') %>%
+  html_text()
+```
+
+What if you want to extract the <a> values inside the listed items <li>, within the unlisted list <ul>?
+
+```{r}
+xml_doc %>%
+  html_nodes(xpath = '//ul[@class=""]/li/a') %>%
+  html_text()
+```
+
+```{r}
+xml_doc %>%
+  html_nodes(xpath = '//ul[@class=""]//a') %>%
+  html_text()
+```
+
+### Extracting href attributes
+
+Let's focus again on the first two html tables of the page <https://www.basketball-reference.com/leagues/NBA_2017.html>.
+
+To extract the first "table" you can use html_nodes() and extract() as follows:
+
+```{r}
+# extracting first table 
+xml_table1 <- xml_doc %>%
+  html_nodes("table") %>%
+  extract(1)
+
+class(xml_table1)
+```
+
+The object xml_table1 is not really an R table, but an object of class xml_nodeset. To extract the html table as a data frame, "rvest" provides the function html_table():
+
+```{r}
+tbl1 <- html_table(xml_table1)
+
+head(tbl1)
+```
+
+Likewise, the second html table can be extracted (as an xml_nodeset) in the following way:
+
+```{r}
+# extracting second table 
+xml_table2 <- xml_doc %>%
+  html_nodes("table") %>%
+  extract(2)
+```
+
+
+Actually, both tables can be extracted simultaneously:
+
+```{r}
+# two html tables
+xml_tables <- xml_doc %>%
+  html_nodes("table") %>%
+  extract(1:2)
+
+```
+
+Having extracted the tables we are interested in, we can select the <a> nodes, and then extract the content that corresponds to the name of the teams:
+
+```{r}
+# extract names of teams
+xml_tables %>% 
+  html_nodes("a") %>%
+  html_text()
+```
+
+In order to get the href attributes we need to use the html_attr() function:
+
+```{r}
+xml_tables %>% 
+  html_nodes("a") %>% 
+  html_attr("href")
+
+```
+
+**Store the href attributes in a character vector hrefs.**
+
+```{r}
+hrefs <- xml_tables %>% 
+  html_nodes("a") %>% 
+  html_attr("href")
+```
+
+
+**Use string manipulation functions to create a character vector teams that contains just the team abbreviations: e.g. "BOS", "CLE", "TOR", ...**
+
+```{r}
+teams <- str_sub(hrefs, start = 8, end = 10)
+teams
+```
+
+**Create a character vector files with elements: "BOS-roster-2017.csv", "CLE-roster-2017.csv", "TOR-roster-2017.csv", ...**
+
+```{r}
+files <- paste0(teams, "-roster-2017.csv")
+files
+```
+
+
+**Use the object basket and the first element of hrefs (i.e. hrefs[1]) to assemble a team_url like the one used for gsw_url:**
+```{r}
+# modify with `hrefs[1]`
+basket <- "https://www.basketball-reference.com"
+team_url <- paste0(basket, hrefs[1])
+
+```
+
+
+**Read the html document of team_url.**
+
+```{r}
+team_html <- read_html(team_url)
+```
+
+
+**Use html_table() to extract the content of the html table as a data frame called roster.**
+
+```{r}
+roster <- html_table(team_html)
+```
+
+**Store the data frame in a csv file: "BOS-roster-2017.csv".**
+
+```{r}
+write.csv(x = roster, file = "BOS-roster-2017.csv", row.names = FALSE)
+```
+
+**Create a for () loop to extract a handful of the roster tables as data frames.**
+**Store each table in its own csv file: e.g. "GSW-roster-2017.csv"**
+
+```{r}
+for(i in 10:15){
+  team_url <- paste0(basket, hrefs[i])
+  team_html <- read_html(team_url)
+  roster <- html_table(team_html)
+  write.csv(x = roster, file = files[i], row.names = FALSE)
+}
+```
+
+
+### Challenge 
+
+Using all the saved csv files, how would you build a global table containing the extracted rosters, in a way that this table would also have a column for the team?
+
+Try getting such a global table and save it in a file nba-rosters-2017.csv
+
+```{r}
+global <- data.frame()
+
+for(i in 10:15){
+  team_csv <- read.csv(files[i], stringsAsFactors = FALSE)
+  team_name <- str_sub(files[i], start = 1, end = 3)
+  team_csv$Team <- rep(team_name, nrow(team_csv))
+  global <- merge.data.frame(global, team_csv, all = TRUE, sort = FALSE)
+  
+}
+
+head(global)
+write.csv(global, file = "nba-rosters-2017.csv", row.names = FALSE)
+```
+
+

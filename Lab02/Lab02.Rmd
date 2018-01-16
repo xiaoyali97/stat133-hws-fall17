@@ -1,0 +1,366 @@
+---
+title: "Lab02"
+output: html_document
+author: "Xiaoya Li"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# load data in your R session
+load('nba2017-salary-points.RData')
+```
+
+```{r}
+# list the available objects with ls()
+ls()
+```
+
+Your turn. Find out what is the class of each of the objects player, team, etc:
+```{r}
+class(player)
+class(team)
+class(position)
+class(salary)
+class(points)
+```
+
+Now use length(), head(), tail(), and summary() to start exploring the content of the objects:
+```{r}
+length(player)
+head(player)
+tail(player)
+summary(player)
+
+length(team)
+head(team)
+tail(team)
+summary(team)
+
+summary(salary)
+summary(points)
+
+```
+
+Do all the objects have the same length?
+Yes.
+```{r}
+length(salary)
+length(points)
+length(position)
+```
+
+How do you know if any of the loaded objects is a vector? Using class() does not explicitly tell you whether an R object is a vector or not. A more explicit way to check if player or position are vectors is with the function is.vector().
+```{r}
+# check whether the loaded objects are vectors
+is.vector(player)
+is.vector(team)
+is.vector(salary)
+is.vector(points)
+is.vector(position)
+
+```
+
+Remember that R vectors are atomic structures, which is just the fancy name to indicate that all the elements of a vector must be of the same type, either all numbers, all characters, or all logical values. To test if an object is atomic, i.e. has all its elements of the same type, use is.atomic()
+```{r}
+# check whether the loaded objects are atomic objects
+is.atomic(player)
+is.atomic(team)
+is.atomic(salary)
+is.atomic(points)
+is.atomic(position)
+```
+
+```{r}
+# third element (four times)
+player[rep(3, 4)]
+```
+Subset the first four players:
+```{r}
+four <- player[1:4]
+four
+```
+
+Now try these. What happens if you specify:
+
+an index of zero: four[0]?  
+a negative index: four[-1]?  
+various negative indices: four[-c(1,2,3)]?  
+an index greater than the length of the vector: four[5]?  
+repeated indices: four[c(1,2,2,3,3,3)]?
+```{r}
+four[0]
+four[-1]             #all elements except 1
+four[-c(1,2,3)]      #all elements except 1,2,3
+four[5]
+four[c(1,2,2,3,3,3)] #repeat as it indicate
+```
+
+Figure out how to use seq(), rep() to extract:
+
+all the even elements in player
+```{r}
+player_even <- player[seq(from = 2, to = length(player), by = 2)]
+```
+
+all the odd elements in salary
+```{r}
+salary_odd = salary[seq(from = 1, to = length(salary), by = 2)]
+```
+
+all multiples of 5 (e.g. 5, 10, 15, etc) of team
+```{r}
+team_muptiples_of_5 = team[seq(from = 5, to = length(team), by = 5)]
+```
+
+elements in positions 10, 20, 30, 40, etc of points
+```{r}
+points_in_10s_post = points[seq(from = 10, to = length(points), by = 10)]
+```
+
+all the even elements in team but this time in reverse order
+```{r}
+#team_even = team[seq(from = 2, to = length(team), by = 2)]
+#team_even
+team_even_reverse = team[seq(from = length(team), to = 2, by = -2)]
+#team_even_reverse
+```
+
+Write commands, using bracket notation, to answer the following questions (you may need to use min(), max(), which(), which.min(), which.max()):
+```{r}
+# players in position Center, of Warriors (GSW)
+player[position == 'C' & team == 'GSW']
+```
+```{r}
+# players of both GSW (warriors) and LAL (lakers)
+player[team == 'GSW' | team == 'LAL']
+```
+
+```{r}
+# players in positions Shooting Guard and Point Guards, of Lakers (LAL) 
+player[team == 'LAL' & (position == 'SG' | position == 'PG')]
+```
+```{r}
+# subset Small Forwards of GSW and LAL
+player[position == 'SF' & (team == 'GSW' | team == 'LAL')]
+```
+
+```{r}
+# name of the player with largest salary
+player[salary == max(salary)]
+```
+
+```{r}
+# name of the player with smallest salary
+player[salary == min(salary)]
+```
+
+```{r}
+# name of the player with largest number of points
+player[points == max(points)]
+```
+
+```{r}
+# salary of the player with largest number of points
+salary[points == max(points)]
+```
+
+```{r}
+# largest salary of all Centers
+salary[position == 'C'][salary == max(salary)]
+```
+
+```{r}
+# team of the player with the largest number of points
+team[player == player[points == max(points)]]
+```
+```{r}
+# name of the player with the largest number of 3-pointers
+player[points3 == max(points3)]
+```
+
+```{r}
+names(player)
+```
+
+Create a vector `warriors_player` by selecting the players of `team == 'GSW'`; 
+then create a vector `warriors_salary` with their salaries, and another
+vector `warriors_points` with their `points`. 
+Assign `warriors_player` as the names of `warriors_salary`.
+```{r}
+warriors_player <- player[team == 'GSW']
+warriors_salary <- salary[team == 'GSW']
+warriors_points <- points[team == 'GSW']
+names(warriors_salary) <- warriors_player
+```
+
+
+You should have a vector `warriors_salary` with named elements. Now you can use
+character subsetting:
+```{r}
+warriors_salary["Andre Iguodala"]
+
+warriors_salary[c("Stephen Curry", "Kevin Durant")]
+```
+
+Use the function `plot()` to make a scatterplot of `points` and `salary`
+```{r}
+plot(points, salary)
+```
+
+To get a better display of the scatterplot, let's create two vectors
+`log_points` and `log_salary` by transforming `points` and `salary` with the 
+logarithm function `log()`
+
+```{r}
+log_points <- log(points)
+log_salary <- log(salary)
+```
+
+Make another scatterplot but now use the log-transformed vectors:
+
+```{r, eval = FALSE}
+plot(log_points, log_salary)
+```
+
+To add the names of the players in the plot, you can use the low-level graphing
+function `text()`:
+
+```{r}
+plot(log_points, log_salary)
+text(log_points, log_salary, labels = player)
+```
+
+Now we have another problem. The labels in the plot are very messy. A quick
+and dirty fix is to use `abbreviate()` to shorten the displayed names:
+
+```{r, eval = FALSE}
+plot(log_points, log_salary)
+text(log_points, log_salary, labels = abbreviate(player))
+```
+
+Your Turn: create a scatterplot of points and salary for the Warriors (GSW), displaying the names of the players. Generate two scatterplots, one with raw values (original scale, and another plot with log-transformations).
+```{r}
+#raw values
+plot(warriors_points, warriors_salary)
+text(warriors_points, warriors_salary, labels = warriors_player)
+```
+
+```{r}
+#log-transformations
+warriors_points_log <- log(warriors_points)
+warriors_salary_log <- log(warriors_salary)
+plot(warriors_points_log, warriors_salary_log)
+text(warriors_points_log, warriors_salary_log, labels = warriors_player)
+```
+
+`salary` is given in dollars, but what if you need to
+obtain the salaries in millions of dollars?. Create a new vector
+`salary_millions` with the converted values in millions of dollars. 
+
+```{r}
+# your code here
+salary_millions <- salary / 1000000
+```
+
+Take the values in `height`, given in inches, to create a new vector 
+`height_cms` that shows the values in centimeters; use the conversion of 
+1 inch = 2.54 centimeters.
+
+```{r}
+# your code here
+height <- 10
+height_cms <- height * 2.54
+```
+
+Here's another example of recycling. Heights of elements in an odd number 
+position will be transformed to cms; heights of elements in an even 
+number position will be transformed to meters:
+
+```{r}
+units <- c(2.54, 0.0254)
+mix_height <- height * units
+```
+
+The elements of `units` are recycled and repeated as many times as elements
+in `height`. The previous command is equivalent to this:
+
+```{r}
+new_units <- rep(c(2.54, 0.0254), length.out = length(height))
+height * new_units
+```
+
+The object `team` is an R factor. You can confirm this by using `is.factor()`
+or `class()`
+
+```{r}
+is.factor(team)
+```
+
+Use `factor()` to create an object `position_fac` by converting `position` into a factor:
+
+```{r}
+position_fac <- factor(position)
+```
+
+If you have a factor, you can invoke `table()` to get a table with the 
+frequencies (i.e. counts) of the factor categories or _levels_:
+
+```{r}
+table(position_fac)
+```
+
+### Manipulating Factors
+
+Because factors are internally stored as integers, you can manipulate factors
+as any other vector:
+
+```{r}
+position_fac[1:5]
+```
+
+Practice manipulating `position_fac` to get:
+```{r}
+# positions of Warriors
+position_fac[team == 'GSW']
+```
+
+```{r}
+# positions of players with salaries > 15 millions
+position_fac[salary > 15000000]
+```
+
+```{r}
+# frequencies (counts) of positions with salaries > 15 millions
+length(position_fac[salary > 15000000])
+```
+
+```{r}
+# relative frequencies (proportions) of 'SG' (Shooting Guards) in each team
+prop.table(table(team[position_fac == 'SG']))
+```
+
+Let's go back to the scatterplot of `points` and `salary`
+
+```{r}
+plot(points, salary)
+```
+
+But now use your factor `position_fac` to add some color to the dots in the
+scatterplot. Pass the factor to the `col = ` parameter inside `plot()`
+
+```{r}
+# your colored scatterplot
+plot(points, salary, col = position_fac )
+```
+
+Experiment with other `plot()` arguments like the _point character_ `pch =`, 
+the _size of dots_ with the parameter `cex = `, the axes labels `xlab` and 
+`ylab` and so on. 
+```{r}
+plot(points, salary, pch = '*', cex = 1.5, xlab = 'POINT', ylab = 'SALARY')
+
+```
+

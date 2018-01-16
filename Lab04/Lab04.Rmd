@@ -1,0 +1,657 @@
+---
+title: "Lab04"
+author: "Xiaoya Li"
+date: "September 21, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Creating data frames
+```{r}
+#creating vectors for each of the columns
+player <- c("Thompson", "Curry", "Green", "Durant", "Pachulia")
+position <- c("SG", "PG", "PF", "SF", "C")
+salary <- c(16663575, 12112359, 15330435, 26540100, 2898000)
+points <- c(1742, 1999, 776, 1555, 426)
+ppg <- c(22.3, 25.3, 10.2, 25.1, 6.1)
+rookie <- c(FALSE,FALSE,FALSE,FALSE,FALSE)
+```
+
+```{r}
+#create a first data frame
+first_data_frame <- data.frame(
+  Player = player,
+  Position = position,
+  Salary = salary,
+  Points = points,
+  PPG = ppg,
+  Rookie = rookie,
+  stringsAsFactors = FALSE
+)
+
+is.data.frame(first_data_frame)
+is.list(first_data_frame)
+```
+
+```{r}
+#create another data frame
+my_list <- list(
+  Player = player,
+  Position = position,
+  Salary = salary,
+  Points = points,
+  PPG = ppg,
+  Rookie = rookie,
+  stringsAsFactors = FALSE
+)
+
+second_data_frame <- data.frame(my_list)
+is.data.frame(second_data_frame)
+```
+
+```{r}
+position_fac <- factor(position)
+points_int <- as.integer(points)
+
+third_data_fram <- data.frame(
+  Player = player,
+  Position = position_fac,
+  Salary = salary,
+  Points = points_int,
+  PPG = ppg,
+  Rookie = rookie,
+  stringsAsFactors = FALSE
+)
+str(third_data_fram)
+```
+
+```{r}
+tab_object <- cbind(player,position,salary,points,ppg,rookie)
+fourth_data_frame <- data.frame(tab_object)
+str(fourth_data_frame)
+```
+
+```{r}
+# download csv file into your working directory
+csv <- "https://github.com/ucb-stat133/stat133-fall-2017/raw/master/data/nba2017-players.csv"
+download.file(url = csv, destfile = 'nba2017-players.csv')
+```
+
+```{r}
+dat <- read.csv('nba2017-players.csv', stringsAsFactors = FALSE)
+```
+
+```{r}
+dim(dat)
+```
+
+```{r}
+head(dat)
+tail(dat)
+```
+
+```{r}
+str(dat)
+```
+
+- Display the last 5 rows of the data.
+```{r}
+dat[437:441, ]
+```
+
+- Display those rows associated to players having height less than 70 inches tall.
+```{r}
+dat[dat$height < 70, ]
+```
+
+- Of those players that are centers (position C), display their names and salaries.
+```{r}
+dat[dat$position == "C", ][, c("player", "salary")]
+```
+
+- Create a data frame durant with Kevin Durant's information (i.e. row)
+```{r}
+durant <- data.frame(dat[dat$player == "Kevin Durant", ])
+durant
+```
+
+- Create a data frame ucla with the data of players from college UCLA ("University of California, Los Angeles")
+```{r}
+ucla <- data.frame(dat[dat$college == "University of California, Los Angeles", ])
+ucla
+```
+
+- Create a data frame rookies with those players with 0 years of experience.
+```{r}
+rookies <- data.frame(dat[dat$experience == 0, ])
+rookies
+```
+
+- Create a data frame rookie_centers with the data of Center rookie players
+```{r}
+rookie_centers <- data.frame(rookies[rookies$position == "C", ])
+rookie_centers
+```
+
+- Create a data frame top_players for players with more than 50 games and more than 100 minutes played
+```{r}
+top_players <- dat[dat$games > 50 & dat$minutes > 100, ]
+top_players
+```
+
+- What's the largest height value?
+```{r}
+max(dat$height)
+```
+
+- What's the minimum height value?
+```{r}
+min(dat$height)
+```
+
+- What's the overall average height?
+```{r}
+mean.default(dat$height)
+```
+
+- Who is the tallest player?
+```{r}
+dat[dat$height == max(dat$height), ]$player
+```
+
+- Who is the shortest player?
+```{r}
+dat[dat$height == min(dat$height), ]$player
+```
+
+- Which are the unique teams?
+```{r}
+unique(dat$team)
+```
+
+- How many different teams?
+```{r}
+length(unique(dat$team))
+```
+
+- Who is the oldest player?
+```{r}
+dat[dat$age == max(dat$age), ]$player
+```
+
+- What is the median salary of all players?
+```{r}
+median(dat$salary)
+```
+
+- What is the median salary of the players with 10 years of experience or more?
+```{r}
+median(dat[dat$experience >= 10, ]$salary)
+```
+
+- What is the median salary of Shooting Guards (SG) and Point Guards (PG)?
+```{r}
+median(dat[dat$position == "SG" | dat$position == "PG", ]$salary)
+```
+
+- What is the median salary of Power Forwards (PF), 29 years or older, and 74 inches tall or less?
+```{r}
+median(dat[dat$position == "PF" & dat$age >= 29 & dat$height <= 74, ]$salary)
+```
+
+- How many players scored 4 points or less?
+```{r}
+nrow(dat[dat$points <= 4,])
+```
+
+- Who are those players who scored 4 points or less?
+```{r}
+dat[dat$points <= 4,]$player
+```
+
+- Who is the player with 0 points?
+```{r}
+dat[dat$points == 0, ]$player
+```
+
+- How many players are from "University of California, Berkeley"?
+```{r}
+nrow(dat[dat$college == "University of California, Berkeley", ])
+```
+
+- Are there any players from "University of Notre Dame"? If so how many and who are they?
+```{r}
+dat[dat$college == "University of Notre Dame", ]
+```
+
+- Are there any players with weight greater than 260 pounds? If so how many and who are they?
+```{r}
+dat[dat$weight > 260, ]
+```
+
+- Are there any players with weight greater than 260 pounds? If so how many and who are they?
+```{r}
+subset(dat, weight > 260)
+
+```
+
+- Who is the player with the maximum rate of points per minute?
+```{r}
+dat$points_per_min <- dat$points / dat$minutes
+dat[dat$points_per_min == max(dat$points_per_min), ]$player
+dat$points_per_min <- NULL
+```
+
+- Who is the player with the maximum rate of three-points per minute?
+```{r}
+dat$points3_per_min <- dat$points3 / dat$minutes
+dat[dat$points3_per_min == max(dat$points3_per_min), ]$player
+dat$points3_per_min <- NULL
+```
+
+- Who is the player with the maximum rate of two-points per minute?
+```{r}
+dat$points2_per_min <- dat$points2 / dat$minutes
+dat[dat$points2_per_min == max(dat$points2_per_min), ]$player
+dat$points2_per_min <- NULL
+```
+
+- Who is the player with the maximum rate of one-points (free-throws) per minute?
+```{r}
+dat$points1_per_min <- dat$points1 / dat$minutes
+dat[dat$points1_per_min == max(dat$points1_per_min), ]$player
+dat$points1_per_min <- NULL
+```
+
+- Create a data frame gsw with the name, height, weight of Golden State Warriors (GSW)
+```{r}
+gsw <- dat[dat$team == "GSW"  ,c("player", "height", "weight")]
+gsw
+```
+
+- Display the data in gsw sorted by height in increasing order (hint: see ?sort and ?order)
+```{r}
+gsw[order(gsw$height), ]
+```
+
+- Display the data in gsw by weight in decreasing order (hint: see ?sort and ?order)
+```{r}
+gsw[order(gsw$weight, decreasing = TRUE), ]
+```
+
+- Display the player name, team, and salary, of the top 5 highest-paid players (hint: see ?sort and ?order)
+```{r}
+dat[order(dat$salary, decreasing = TRUE),][1:5, c("player", "team", "salary")]
+```
+
+- Display the player name, team, and points3, of the top 10 three-point players (hint: see ?sort and ?order)
+```{r}
+dat[order(dat$points3, decreasing = TRUE), ][1:10 , c("player", "team", "points3")]
+```
+
+- Create a data frame with the average height, average weight, and average age, grouped by position
+
+```{r}
+pos_ave <- aggregate(dat[,c("height", "weight", "age")], by = list(dat$position), FUN = mean)
+pos_ave
+```
+
+- Create a data frame with the average height, average weight, and average age, grouped by team
+```{r}
+team_ave <- aggregate(dat[,c("height", "weight", "age")], by = list(dat$team),
+                      FUN = mean)
+team_ave
+```
+
+- Create a data frame with the average height, average weight, and average age, grouped by team and position.
+```{r}
+team_pos_ave <- aggregate(dat[,c("height","weight","age")], 
+                          by = list(dat$team, dat$position),FUN = mean)
+team_pos_ave
+```
+
+- Difficult: Create a data frame with the minimum salary, median salary, mean salary, and maximum salary, grouped by team and position.
+```{r}
+d <- aggregate(dat$salary, by = list(dat$team, dat$position), 
+               FUN = function(x) { c(min = min(x), median = median(x),mean = mean(x), max = max(x))})
+d
+```
+
+
+
+
+
+
+###Abalone Data Set
+Look at both the dataset file, and the file with its description, and answer the following questions: 
+
+    - What's the character delimiter?   
+    A comma.
+    
+    - Is there a row for column names?  
+    No, there's not.
+    
+    - Are there any missing values? If so, how are they codified?  
+    No, there are no missing values.
+    
+    - What is the data type of each column?  
+    The first column is nominal(character), the last column is integer and all other columns are continuous(float).
+    
+```{r}
+#read in Data
+url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data"
+abalone <- read.table(url, sep = ",")
+```
+
+####Getting a Local Copy of the Data
+
+```{r}
+# download copy
+origin <- 'http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data'
+destination <- 'abalone.data'
+download.file(origin, destination)
+```
+
+```{r}
+# reading data from your working directory
+abalone <- read.table("abalone.data", sep = ",")
+```
+
+```{r}
+# take a peek of first rows
+head(abalone)
+
+# take a peek of last rows
+tail(abalone)
+```
+
+```{r}
+# check data frame's structure
+str(abalone, vec.len = 1)
+```
+
+###Detailed information about the columns
+
+```{r}
+col_names <- c(
+    'sex',
+    'length',
+    'diameter',
+    'height',
+    'whole_weight',
+    'shucked_weight',
+    'viscera_weight',
+    'shell_weight',
+    'rings'
+)
+
+col_types <- c(
+    'factor',
+    'numeric',
+    'numeric',
+    'numeric',
+    'numeric',
+    'numeric',
+    'numeric',
+    'numeric',
+    'integer'   
+)
+```
+
+```{r}
+abalone <- read.table(
+    'abalone.data',
+    col.names = col_names,
+    colClasses = col_types,
+    sep = ","
+)
+abalone
+# check its structure again
+str(abalone, vec.len = 1)
+```
+
+- Read the Abalone data with the read.csv() function
+
+```{r}
+abalone <- read.csv(
+  'abalone.data',
+    col.names = col_names,
+    colClasses = col_types,
+    sep = ",",
+  header = FALSE
+)
+abalone
+```
+
+- confirm the following statistics
+
+```{r}
+#to be finish...
+min(abalone$length, na.rm = TRUE)
+max(abalone$length, na.rm = TRUE)
+mean(abalone$length, na.rm = TRUE)
+sd(abalone$length, na.rm = TRUE)
+
+
+  
+```
+
+
+###Basic Plots
+```{r}
+plot(abalone$sex)
+```
+
+```{r}
+hist(abalone$length)
+boxplot(abalone$length, horizontal = TRUE)
+```
+
+```{r}
+hist(abalone$diameter)
+boxplot(abalone$diameter, horizontal = TRUE)
+```
+
+```{r}
+hist(abalone$height)
+boxplot(abalone$height, horizontal = TRUE)
+```
+
+```{r}
+hist(abalone$whole_weight)
+boxplot(abalone$whole_weight, horizontal = TRUE)
+```
+
+```{r}
+hist(abalone$shucked_weight)
+boxplot(abalone$shucked_weight, horizontal = TRUE)
+```
+
+```{r}
+hist(abalone$viscera_weight)
+boxplot(abalone$viscera_weight, horizontal = TRUE)
+```
+
+```{r}
+hist(abalone$shell_weight)
+boxplot(abalone$shell_weight, horizontal = TRUE)
+```
+
+```{r}
+hist(abalone$rings)
+boxplot(abalone$rings, horizontal = TRUE)
+```
+
+###Pittsburgh Bridges Data Set
+```{r}
+bridges <- read.csv("http://archive.ics.uci.edu/ml/machine-learning-databases/bridges/bridges.data.version1")
+```
+
+```{r}
+head(bridges)
+tail(bridges)
+str(bridges)
+```
+
+
+- Are there column names?  
+No, there are not.
+
+- What is the field separator?  
+comma.
+
+- Are there any missing values?  
+Yes, there are 9 missing values.   
+
+- What is the character for missing values (if any)?  
+'?'
+
+- What is the data type of each variable (i.e. column)?    
+The first column is identifier, which has no data type. Columns 4, 6, 7 are both continuous and nominal, all other columns are nominal.
+
+- Download a copy of the data to your computer (use download.file()) and save it in a file named bridges.data
+
+```{r}
+# download a copy of the data file
+origin <- 'http://archive.ics.uci.edu/ml/machine-learning-databases/bridges/bridges.data.version1'
+destination <- 'Pittsburgh_bridges.data'
+download.file(origin, destination)
+```
+
+###Reading the Data
+```{r}
+# vector of column names
+bridges_col_names <- c(
+  "identity",
+  "river",
+  "location",
+  "erected",
+  "purpose",
+  "length",
+  "lanes",
+  "clear-g",
+  "t-or-d",
+  "material",
+  "span",
+  "rel-l",
+  "type"
+)
+
+# vector of column types
+bridges_col_types <- c(
+  'character',
+  'factor',
+  'numeric',
+  'numeric',
+  'factor',
+  'numeric',
+  'factor',
+  'factor',
+  'factor',
+  'factor',
+  'factor',
+  'factor',
+  'factor'
+)
+
+# reading the data with 'read.table()'
+bridges <- read.table(
+   'Pittsburgh_bridges.data',
+    col.names = bridges_col_names,
+    colClasses = bridges_col_types,
+    sep = ",",
+   na.strings = "?"
+    
+)
+
+```
+
+```{r}
+# reading the data with 'read.csv()'
+bridges <- read.csv(
+  'Pittsburgh_bridges.data',
+  col.names = bridges_col_names,
+  colClasses = bridges_col_types,
+  sep = ",",
+  na.strings = "?",
+  header = FALSE
+)
+
+```
+
+###Basic Inspection
+
+Use functions to start examining the `bridges` data frame:
+```{r}
+str(bridges)
+```
+
+```{r}
+summary(bridges)
+
+```
+
+```{r}
+head(bridges)
+tail(bridges)
+```
+
+```{r}
+dim(bridges)
+
+```
+
+```{r}
+names(bridges)
+
+```
+
+```{r}
+colnames(bridges)
+
+```
+
+```{r}
+nrow(bridges)
+ncol(bridges)
+```
+
+Write R code to find:
+- Year of the oldest bridge
+```{r}
+min(bridges$erected)
+```
+
+- Year of the most recent erected bridge
+```{r}
+max(bridges$erected)
+```
+
+- Frequency of bridges by purpose
+```{r}
+table(bridges$purpose)
+```
+
+- Frequency of materials
+```{r}
+table(bridges$material)
+```
+
+- Average length of the bridges
+```{r}
+mean(bridges$length, na.rm = TRUE)
+```
+
+Plot a timeline: year -vs- length
+```{r}
+with(bridges, {
+    plot(erected, length, type = "h",
+         xlab = "Year", col="grey", ylim=c(0, 4600))
+    points(erected, length, pch = "-", col = "red")
+  })
+  abline(h=0, lwd=2)
+```
+
